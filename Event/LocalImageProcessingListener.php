@@ -138,8 +138,6 @@ class LocalImageProcessingListener extends Object implements CakeEventListener {
 				$id = $record[$Model->primaryKey];
 				$filename = $Model->stripUuid($id);
 				$file = $record['file'];
-				$format = $record['extension'];
-				$sizes = Configure::read('Media.imageSizes.' . $record['model']);
 				$record['path'] = $Model->fsPath('images' . DS . $record['model'], $id);
 				$result = $Storage->write($record['path'] . $filename . '.' . $record['extension'], file_get_contents($file['tmp_name']), true);
 
@@ -207,6 +205,7 @@ class LocalImageProcessingListener extends Object implements CakeEventListener {
  * @param array $image
  * @param boolean $extension
  * @param string $hash
+ * @return string
  */
 	protected function _buildPath($image, $extension = true, $hash = null) {
 		$path = $image['path'] . str_replace('-', '', $image['id']);

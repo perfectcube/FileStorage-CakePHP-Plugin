@@ -44,10 +44,10 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
  * @return void
  */
 	public function afterSave($Event) {
-        if ($this->_checkEvent($Event)) {
-            $Model = $Event->subject();
-            $record = $Model->data[$Model->alias];
-            $Storage = StorageManager::adapter($record['adapter']);
+		if ($this->_checkEvent($Event)) {
+			$Model = $Event->subject();
+			$record = $Model->data[$Model->alias];
+			$Storage = StorageManager::adapter($record['adapter']);
 
 			try {
 				$id = $record[$Model->primaryKey];
@@ -74,7 +74,7 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
  */
 	protected function _checkEvent($Event) {
 		$Model = $Event->subject();
-		return ($Model instanceOf FileStorage && ((isset($Event->data['record'][$Model->alias]['adapter']) && $Event->data['record'][$Model->alias]['adapter'] == 'Local') || get_class($Event->data['storage']->getAdapter()) == 'Gaufrette\Adapter\Local'));
+		return (($Model instanceOf FileStorage) && !($Model instanceOf ImageStorage) && ((isset($Event->data['record'][$Model->alias]['adapter']) && $Event->data['record'][$Model->alias]['adapter'] == 'Local') || get_class($Event->data['storage']->getAdapter()) == 'Gaufrette\Adapter\Local'));
 	}
 
 }
