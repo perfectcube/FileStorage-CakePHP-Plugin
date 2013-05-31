@@ -60,7 +60,7 @@ class InitialFileStorageMigration extends CakeMigration {
  * @access public
  */
 	public function before($direction) {
-		if (Configure::read('FileStorage.Schema.useIntegers') === true) {
+		if (Configure::read('FileStorage.schema.useIntegers') === true) {
 			$this->migration['up']['create_table']['file_storage']['id']['type'] = 'integer';
 			$this->migration['up']['create_table']['file_storage']['id']['length'] = 10;
 			$this->migration['up']['create_table']['file_storage']['foreign_key']['type'] = 'integer';

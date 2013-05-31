@@ -77,7 +77,16 @@ class FileUploadBehaviorTest extends CakeTestCase {
 				'exclusive' => '',
 				'finderQuery' => '',
 				'counterQuery' => '')));
-		debug($Item->Behaviors->FileUpload->settings['Item']);
+
+		$this->assertEqual($Item->Behaviors->FileUpload->settings['Item'], array(
+			'fileField' => 'file',
+			'pathField' => 'path',
+			'adapterConfig' => 'Local',
+			'storageDeleteCallback' => 'afterDelete',
+			'storageModelAssociation' => true,
+			'storageModelAssocName' => 'File',
+			'storageKeyCallback' => 'computeStorageKey'
+		));
 	}
 
 /**
@@ -89,16 +98,17 @@ class FileUploadBehaviorTest extends CakeTestCase {
 		$Item = ClassRegistry::init('Item');
 		$Item->Behaviors->load('FileStorage.FileUpload', array());
 		$Item->create();
-		$Item->save(array('Item' => array(
-			'name' => 'File Upload',
-			'file' => array(
-				'name' => 'cake.power.gif',
-				'type' => 'image/gif',
-				'tmp_name' => $this->testFilePath . 'cake.icon.png',
-				'error' => 0,
-				'size' => 1212))));
-
-
+		$result = $Item->save(array(
+			'Item' => array(
+				'name' => 'File Upload'),
+			'File' => array(
+				'file' => array(
+					'name' => 'cake.power.gif',
+					'type' => 'image/gif',
+					'tmp_name' => $this->testFilePath . 'cake.icon.png',
+					'error' => 0,
+					'size' => 1212))));
+		debug($Item->File->find('all'));
 	}
 
 }

@@ -23,11 +23,11 @@ class FileUploadBehavior extends ModelBehavior {
 		'fileField' => 'file',
 		'pathField' => 'path',
 		'adapterConfig' => 'Local',
-		'storageCallback' => 'afterSave',
 		'storageDeleteCallback' => 'afterDelete',
 		'storageModelAssociation' => true,
 		'storageModelAssocName' => '',
-		'storageKeyCallback' => 'computeStorageKey');
+		'storageKeyCallback' => 'computeStorageKey',
+	);
 
 /**
  * Behavior Setup
@@ -76,21 +76,21 @@ class FileUploadBehavior extends ModelBehavior {
  * Saves an uploaded file
  *
  * @param Model $Model
- * @return boolean
+ * @return boolean|array
  */
 	public function saveUploadedFile(Model $Model) {
 		extract($this->settings[$Model->alias]);
-		if (method_exists($Model, $storageKeyCallback)) {
-			$key = $Model->{$storageKeyCallback}();
-		} else {
-			$key = $this->computeKey();
+
+		$Model->data[$storageModelAssocName]['adapter'] = $adapterConfig;
+		$Model->data[$storageModelAssocName]['foreign_key'] = $Model->getLastInsertId();
+
+		if (empty($Model->data[$storageModelAssocName]['model'])) {
+			$Model->data[$storageModelAssocName]['model'] = get_class($Model);
 		}
 
-		if (StorageManager::adapter($adapterConfig)->write($key, file_get_contents($Model->data[$storageModelAssocName][$fileField]['tmp_name']))) {
-			$Model->data[$storageModelAssocName]['model'] = get_class($Model);
-			$Model->data[$storageModelAssocName]['foreign_key'] = $Model->getLastInsertId();
-			$Model->data[$storageModelAssocName][$pathField] = $key;
-			return true;
+		if ($Model->{$storageModelAssocName}->save($Model->data)) {
+			$Model->data[$storageModelAssocName]['id'] = $Model->{$storageModelAssocName}->getLastInsertId();
+			return $Model->data;
 		}
 
 		return false;
@@ -104,9 +104,6 @@ class FileUploadBehavior extends ModelBehavior {
  */
 	public function beforeSave(Model $Model) {
 		extract($this->settings[$Model->alias]);
-		if ($storageCallback === 'beforeSave') {
-			return $this->saveuploadedFile($Model);
-		}
 		return true;
 	}
 
@@ -119,70 +116,29 @@ class FileUploadBehavior extends ModelBehavior {
  */
 	public function afterSave(Model $Model, $created) {
 		extract($this->settings[$Model->alias]);
-		if ($storageCallback === 'afterSave') {
-			return $this->saveuploadedFile($Model);
-		}
+		$this->saveUploadedFile($Model);
 		return true;
 	}
 
 /**
- * afterSave
+ * Deletes all associated files for this record
  *
  * @param Model $Model
+ * @param null $id
+ * @throws RuntimeException
  * @return boolean
  */
-	public function beforeDelete(Model $Model) {
+	protected function deleteFiles(Model $Model, $id = null) {
+		if (empty($id) && !empty($Model->id)) {
+			$id = $Model->id;
+		} else {
+			throw new RuntimeException(__d('file_storage', 'No id given!'));
+		}
+
 		extract($this->settings[$Model->alias]);
-		if ($storageDeleteCallback == 'beforeDelete') {
-			return $this->deleteFiles($Model);
-		}
-	}
-
-
-/**
- * afterDelete
- *
- * @param Model $Model
- * @param boolean $cascade
- * @return boolean
- */
-	public function afterDelete(Model $Model, $cascade = true) {
-		extract($this->settings[$Model->alias]);
-
-		if ($storageDeleteCallback == 'afterDelete') {
-			$this->deleteFiles($Model);
-		}
-	}
-
-/**
- * deleteFiles
- *
- * @param Model $Model
- * @return boolean
- */
-	protected function deleteFiles(Model $Model) {
-		$files = $Model->{$storageModelAssocName}->find('all', array(
-			'contain' => array(),
-			'conditions' => array(
-				$storageModelAssocName . '.model' => get_class($Model),
-				$storageModelAssocName . '.foreign_key' => $Model->id)));
-
-		$result = true;
-		if (!empty($files)) {
-			if (in_array($storageModelAssocName, $Model->hasMany)) {
-				foreach ($files as $file) {
-					if (!$this->deleteFile($file)) {
-						$result = false;
-					}
-				}
-			}
-			if (in_array($storageModelAssocName, $Model->hasOne)) {
-				if (!$this->deleteFile($files[$storageModelAssocName])) {
-					$result = false;
-				}
-			}
-		}
-		return $result;
+		return $Model->{$storageModelAssocName}->deleteAll(array(
+			$storageModelAssocName . '.model' => get_class($Model),
+			$storageModelAssocName . '.foreign_key' => $id));
 	}
 
 /**
@@ -192,19 +148,6 @@ class FileUploadBehavior extends ModelBehavior {
  */
 	public function computeKey() {
 		return String::uuid();
-	}
-
-/**
- * Deletes a file from a storage backend
- *
- * @param array
- * @return boolean
- */
-	public function deleteFile($data) {
-		if (StorageManager::adapter($data['adapter'])->delete($data['path'])) {
-			return true;
-		}
-		return false;
 	}
 
 }
