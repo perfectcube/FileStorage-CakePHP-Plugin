@@ -7,6 +7,7 @@ App::uses('CakeEventListener', 'Event');
  * @license MIT
  */
 class LocalFileStorageListener extends Object implements CakeEventListener {
+
 /**
  * Implemented Events
  *
@@ -22,10 +23,12 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
 /**
  * afterDelete
  *
+ * No need to use an adapter here, just delete the whole folder using cakes Folder class
+ *
  * @param CakeEvent $Event
  * @return void
  */
-	public function afterDelete($Event) {
+	public function afterDelete(CakeEvent $Event) {
 		if ($this->_checkEvent($Event)) {
 			$Model = $Event->subject();
 			$path = Configure::read('Media.basePath') . $Event->data['record'][$Model->alias]['path'];
@@ -43,7 +46,7 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
  * @param CakeEvent $Event
  * @return void
  */
-	public function afterSave($Event) {
+	public function afterSave(CakeEvent $Event) {
 		if ($this->_checkEvent($Event)) {
 			$Model = $Event->subject();
 			$record = $Model->data[$Model->alias];
@@ -58,7 +61,8 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
 
 				$Model->save(array($Model->alias => $record), array(
 					'validate' => false,
-					'callbacks' => false));
+					'callbacks' => false
+				));
 
 			} catch (Exception $e) {
 				$this->log($e->getMessage(), 'file_storage');
@@ -74,7 +78,7 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
  */
 	protected function _checkEvent($Event) {
 		$Model = $Event->subject();
-		return (($Model instanceOf FileStorage) && !($Model instanceOf ImageStorage) && ((isset($Event->data['record'][$Model->alias]['adapter']) && $Event->data['record'][$Model->alias]['adapter'] == 'Local') || get_class($Event->data['storage']->getAdapter()) == 'Gaufrette\Adapter\Local'));
+		return ($Model instanceOf FileStorage && ((isset($Event->data['record'][$Model->alias]['adapter']) && $Event->data['record'][$Model->alias]['adapter'] == 'Local') || get_class($Event->data['storage']->getAdapter()) == 'Gaufrette\Adapter\Local'));
 	}
 
 }

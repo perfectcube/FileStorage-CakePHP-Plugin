@@ -11,18 +11,18 @@ App::uses('Folder', 'Utility');
 class ImageStorage extends FileStorage {
 
 /**
+ * Name
+ *
+ * @var string
+ */
+	public $name = 'ImageStorage';
+
+/**
  * Table to use
  *
  * @var mixed
  */
 	public $useTable = 'file_storage';
-
-/**
- * Create revisions after upload or not
- *
- * @var boolean default true
- */
-	public $createVersions = true;
 
 /**
  * Behaviours
@@ -33,10 +33,24 @@ class ImageStorage extends FileStorage {
 		'Imagine.Imagine',
 		'FileStorage.UploadValidator' => array(
 			'localFile' => true,
-			'validateUpload' => false,
-			'allowedExtensions' => array('jpg', 'png', 'gif')
+			'validate' => false,
+			'allowedExtensions' => array('jpg', 'jpeg', 'png', 'gif')
 		),
 	);
+
+/**
+ * Getter
+ *
+ * @param string $name
+ * @throws RuntimeException
+ * @return void
+ */
+	public function __get($name) {
+		if ($name === 'createVersions') {
+			throw new \RuntimeException(__d('file_storage', 'createVersions was removed, see the change log'));
+		}
+		parent::__get($name);
+	}
 
 /**
  * beforeSave callback
@@ -50,7 +64,7 @@ class ImageStorage extends FileStorage {
 		}
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
-		//CakeEventManager::instance()->dispatch($Event);
+		CakeEventManager::instance()->dispatch($Event);
 
 		if ($Event->isStopped()) {
 			return false;
@@ -62,16 +76,16 @@ class ImageStorage extends FileStorage {
 /**
  * afterSave callback
  *
- * @param boolean
+ * Does not call the parent to avoid that the regular file storage event listener saves the image already
+ *
+ * @param boolean $created
+ * @param array $options
  * @return void
  */
-	public function afterSave($created) {
-		parent::afterSave($created);
-
+	public function afterSave($created, $options = array()) {
 		if ($created) {
 			$this->data[$this->alias][$this->primaryKey] = $this->getLastInsertId();
 
-			if ($this->createVersions === true) {
 				$Event = new CakeEvent('ImageStorage.afterSave', $this, array(
 					'created' => $created,
 					'storage' => StorageManager::adapter($this->data[$this->alias]['adapter']),
@@ -79,7 +93,6 @@ class ImageStorage extends FileStorage {
 				CakeEventManager::instance()->dispatch($Event);
 			}
 		}
-	}
 
 /**
  * Get a copy of the actual record before we delete it to have it present in afterDelete
@@ -174,8 +187,13 @@ class ImageStorage extends FileStorage {
  * Image size validation method
  *
  * @param mixed $check
- * @param array $options
+ * @param array $options is an array with key width or height and a value of array
+ *    with two options, operator and value. For example:
+ *    array('height' => array('==', 100)) will only be true if the image has a
+ *    height of exactly 100px. See the CakePHP core class and method
+ *    Validation::comparison for all operators.
  * @return boolean true
+ * @see Validation::comparison()
  * @throws \InvalidArgumentException
  */
 	public function validateImageSize($check, $options) {

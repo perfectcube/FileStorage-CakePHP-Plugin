@@ -111,16 +111,18 @@ class FileStorage extends FileStorageAppModel {
  * afterSave callback
  *
  * @param boolean $created
+ * @param array $options
  * @return void
  */
-	public function afterSave($created) {
+	public function afterSave($created, $options = array()) {
 		if ($created) {
 			$this->data[$this->alias][$this->primaryKey] = $this->getLastInsertId();
 		}
 
 		$Event = new CakeEvent('FileStorage.afterSave', $this, array(
 			'created' => $created,
-			'record' => $this->record,
+			//'record' => $this->record,
+			'record' => $this->data,
 			'storage' => StorageManager::adapter($this->data[$this->alias]['adapter'])));
 		CakeEventManager::instance()->dispatch($Event);
 	}

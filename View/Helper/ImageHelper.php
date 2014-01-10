@@ -14,7 +14,8 @@ class ImageHelper extends AppHelper {
  * @var array
  */
 	public $helpers = array(
-		'Html');
+		'Html'
+	);
 
 /**
  * Generates an image url based on the image record data and the used Gaufrette adapter to store it
@@ -31,7 +32,7 @@ class ImageHelper extends AppHelper {
 			return $this->Html->image($url, $options);
 		}
 
-		return $this->fallbackImage($options);
+		return $this->fallbackImage($options, $image, $version);
 	}
 
 /**
@@ -48,20 +49,26 @@ class ImageHelper extends AppHelper {
 			return false;
 		}
 
-		$hash = Configure::read('Media.imageHashes.' . $image['model'] . '.' . $version);
-		if (empty($hash)) {
-			throw new InvalidArgumentException(__d('FileStorage', 'No valid version key (%s %s) passed!', @$image['model'], $version));
+		if (!empty($version)) {
+			$hash = Configure::read('Media.imageHashes.' . $image['model'] . '.' . $version);
+			if (empty($hash)) {
+				throw new \InvalidArgumentException(__d('file_storage', 'No valid version key (%s %s) passed!', @$image['model'], $version));
+			}
+		} else {
+			$hash = null;
 		}
 
 		$Event = new CakeEvent('FileStorage.ImageHelper.imagePath', $this, array(
-			'hash' => $hash,
-			'image' => $image,
-			'version' => $version,
-			'options' => $options));
+				'hash' => $hash,
+				'image' => $image,
+				'version' => $version,
+				'options' => $options
+			)
+		);
 		CakeEventManager::instance()->dispatch($Event);
 
 		if ($Event->isStopped()) {
-			return '/' . $this->normalizePath($Event->data['path']);
+			return $this->normalizePath($Event->data['path']);
 		} else {
 			return false;
 		}
@@ -71,13 +78,19 @@ class ImageHelper extends AppHelper {
  * Provides a fallback image if the image record is empty
  *
  * @param array $options
+ * @param array $image
+ * @param string $version
  * @return string
  */
-	public function fallbackImage($options = array()) {
+	public function fallbackImage($options = array(), $image = array(), $version = null) {
 		if (isset($options['fallback'])) {
-			$image = $options['fallback'];
+			if ($options['fallback'] === true) {
+				$imageFile = 'placeholder/' . $version . '.jpg';
+			} else {
+				$imageFile = $options['fallback'];
+			}
 			unset($options['fallback']);
-			return $this->Html->image($image, $options);
+			return $this->Html->image($imageFile, $options);
 		}
 		return '';
 	}
