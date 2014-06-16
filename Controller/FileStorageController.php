@@ -35,12 +35,16 @@ class FileStorageController extends FileStorageAppController {
 			if($model) {
 				$data['File']['model'] = $this->$model->alias;
 				$data['File']['adapter'] = 'S3Storage';
-				if ($data = $this->$model->save(array($this->$model->alias => $data['File']))) {
-					$this->response->statusCode(200);
-					$message = "Upload Successful";
-				}else {
-					$this->response->statusCode(500);
-					$message = "Upload Failed";
+				try{
+					if ($data = $this->$model->save(array($this->$model->alias => $data['File']))) {
+						$this->response->statusCode(200);
+						$message = "Upload Successful";
+					}else {
+						$this->response->statusCode(500);
+						$message = "Upload Failed";
+					}
+				}catch (Exception $e) {
+					debug($e->getMessage());exit;
 				}
 			}
 			else {

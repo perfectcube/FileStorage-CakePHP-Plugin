@@ -39,8 +39,8 @@ class ImageProcessingListener extends Object implements CakeEventListener {
 		return array(
 			'ImageVersion.createVersion' => 'createVersions',
 			'ImageVersion.removeVersion' => 'removeVersions',
-			'ImageStorage.afterSave' => 'afterSave',
-			'ImageStorage.afterDelete' => 'afterDelete',
+			//'ImageStorage.afterSave' => 'afterSave',
+			//'ImageStorage.afterDelete' => 'afterDelete',
 			'FileStorage.ImageHelper.imagePath' => 'imagePath',
 		);
 	}
@@ -212,7 +212,6 @@ class ImageProcessingListener extends Object implements CakeEventListener {
 				}
 
 				$result = $Storage->write($path, file_get_contents($file['tmp_name']), true);
-
 				$data = $Model->save(array($Model->alias => $record), array(
 					'validate' => false,
 					'callbacks' => false));
