@@ -121,11 +121,10 @@ class StorageManager {
  */
 	public static function adapter($adapterName = null, $renewObject = false) {
 		$_this = StorageManager::getInstance();
-
+		
 		if (empty($adapterName)) {
 			$adapterName = $_this->_activeAdapter;
 		}
-
 		$isConfigured = true;
 		if (is_string($adapterName)) {
 			if (!empty($_this->_adapterConfig[$adapterName])) {
@@ -138,12 +137,13 @@ class StorageManager {
 				return $_this->_adapterConfig[$adapterName]['object'];
 			}
 		}
-
+		
+		
 		if (is_array($adapterName)) {
 			$adapter = $adapterName;
 			$isConfigured = false;
 		}
-
+		
 		$class = $adapter['adapterClass'];
 		$Reflection = new ReflectionClass($class);
 		$adapterObject = $Reflection->newInstanceArgs($adapter['adapterOptions']);
@@ -151,6 +151,7 @@ class StorageManager {
 		if ($isConfigured) {
 			$_this->_adapterConfig[$adapterName]['object'] = &$engineObject;
 		}
+		
 		return $engineObject;
 	}
 

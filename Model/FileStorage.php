@@ -43,6 +43,13 @@ class FileStorage extends FileStorageAppModel {
  * @var array
  */
 	public $record = array();
+	
+	
+/** 
+ * Short Name for save Folder
+ */
+	
+	public $pathPrefix = "images";
 
 /**
  * Validation rules
@@ -103,10 +110,11 @@ class FileStorage extends FileStorageAppModel {
 		if (empty($this->data[$this->alias]['adapter'])) {
 			$this->data[$this->alias]['adapter'] = 'Local';
 		}
-
+		
 		$Event = new CakeEvent('FileStorage.beforeSave', $this, array(
 			'record' => $this->data,
 			'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter'])));
+		
 		$this->getEventManager()->dispatch($Event);
 		if ($Event->isStopped()) {
 			return false;
@@ -222,11 +230,40 @@ class FileStorage extends FileStorageAppModel {
  * @param boolean $idFolder
  * @return string
  */
-	public function fsPath($type, $string, $idFolder = true) {
-		$string = str_replace('-', '', $string);
-		$path = $type . DS . FileStorageUtils::randomPath($string);
-		if ($idFolder) {
-			$path .= $string . DS;
+	//This is the original Plugin Method
+// 	public function fsPath($type, $string, $idFolder = true) {
+// 		$string = str_replace('-', '', $string);
+// 		$path = $type . DS . FileStorageUtils::randomPath($string);
+// 		if ($idFolder) {
+// 			$path .= $string . DS;
+// 		}
+// 		return $path;
+// 	}
+	
+	
+	
+/**
+ * Generates a zuha system path
+ *
+ * @param string $type
+ * @param string $subfolder
+ * @return string
+ */
+	
+	//This is the Zuha Adapted Method
+	public function fsPath($parentfolder='upload', $subfolder=false) {
+		
+		$type = $this->pathPrefix;
+		$uid = 0;
+		if(CakeSession::check('Auth.User')) {
+			$uid = CakeSession::read('Auth.User.id');
+		}
+		$path = $uid . DS . $type . DS;
+		if($parentfolder) {
+			$path = DS.$parentfolder.DS.$path;
+		}
+		if ($subfolder) {
+			$path .= $subfolder . DS;
 		}
 		return $path;
 	}

@@ -26,12 +26,19 @@ class ImageHelper extends AppHelper {
  * @return string
  */
 	public function display($image, $version = null, $options = array()) {
+		if(isset($options['width']) || isset($options['height'])) {
+			$Event = new CakeEvent('ImageVersion.createVersion', $image, array(
+					'image' => $image,
+					'options' => $options
+				)
+			);
+			CakeEventManager::instance()->dispatch($Event);
+		}
 		$url = $this->imageUrl($image, $version, $options);
-
 		if ($url !== false) {
 			return $this->Html->image($url, $options);
 		}
-
+		
 		return $this->fallbackImage($options, $image, $version);
 	}
 
@@ -57,7 +64,7 @@ class ImageHelper extends AppHelper {
 		} else {
 			$hash = null;
 		}
-
+		
 		$Event = new CakeEvent('FileStorage.ImageHelper.imagePath', $this, array(
 				'hash' => $hash,
 				'image' => $image,
@@ -102,7 +109,10 @@ class ImageHelper extends AppHelper {
  * @return string
  */
 	public function normalizePath($path) {
-		return str_replace('\\', '/', $path);
+		$path = str_replace("//", "/", $path);
+		$path = str_replace("\\", "/", $path);
+		$path = str_replace("http:/", "http://", $path);
+		return $path;
 	}
 
 }

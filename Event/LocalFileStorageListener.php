@@ -17,6 +17,10 @@ class LocalFileStorageListener extends Object implements CakeEventListener {
 		return array(
 			'FileStorage.afterSave' => 'afterSave',
 			'FileStorage.afterDelete' => 'afterDelete',
+			'ImageStorage.afterSave' => 'afterSave',
+			'ImageStorage.afterDelete' => 'afterDelete',
+			'VideoStorage.afterSave' => 'afterSave',
+			'VideoStorage.afterDelete' => 'afterDelete',
 		);
 	}
 

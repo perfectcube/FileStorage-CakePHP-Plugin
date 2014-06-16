@@ -15,24 +15,18 @@ class FileStorageSchema extends CakeSchema {
  */
 	public $name = 'FileStorage';
 
-/**
- * Before callback
- *
- * @param array $event
- * @return boolean
- */
-	public function before($event = array()) {
-		return true;
+	public function __construct($options = array()) {
+		parent::__construct ();
 	}
-
-/**
- * After callback
- *
- * @param array $event
- * @return boolean
- */
+	public function before($event = array()) {
+		App::uses ( 'UpdateSchema', 'Model' );
+		$this->UpdateSchema = new UpdateSchema ();
+		$before = $this->UpdateSchema->before ( $event );
+		return $before;
+	}
 	public function after($event = array()) {
-		return true;
+		$this->UpdateSchema->rename ( $event, $this->renames );
+		$this->UpdateSchema->after ( $event );
 	}
 
 /**
@@ -52,6 +46,8 @@ class FileStorageSchema extends CakeSchema {
 		'hash' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 64),
 		'path' => array('type' => 'string', 'null' => false, 'default' => null),
 		'adapter' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 32, 'comment' => 'Gaufrette Storage Adapter Class'),
+		'creator_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
+		'modifier_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
 		'indexes' => array(

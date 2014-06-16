@@ -46,7 +46,7 @@ abstract class AbstractStorageEventListener extends Object implements CakeEventL
  */
 	protected $_defaults = array(
 		'models' => false,
-		'preserveFilename' => false,
+		'preserveFilename' => true,
 		'preserveExtension' => true,
 	);
 

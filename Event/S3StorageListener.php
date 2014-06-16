@@ -29,6 +29,12 @@ class S3StorageListener extends AbstractStorageEventListener {
 		return array(
 			'FileStorage.afterSave' => 'afterSave',
 			'FileStorage.afterDelete' => 'afterDelete',
+			'ImageStorage.afterSave' => 'afterSave',
+			'ImageStorage.afterDelete' => 'afterDelete',
+			'VideoStorage.afterSave' => 'afterSave',
+			'VideoStorage.afterDelete' => 'afterDelete',
+			'AudioStorage.afterSave' => 'afterSave',
+			'AudioStorage.afterDelete' => 'afterDelete',
 		);
 	}
 
@@ -79,6 +85,7 @@ class S3StorageListener extends AbstractStorageEventListener {
 					'callbacks' => false)
 				);
 			} catch (Exception $e) {
+				debug($e->getMessage());exit;
 				$this->log($e->getMessage(), 'file_storage');
 			}
 		}
@@ -96,9 +103,9 @@ class S3StorageListener extends AbstractStorageEventListener {
 		$adapterConfig = $this->getAdapterconfig($record['adapter']);
 		$id = $record[$Model->primaryKey];
 
-		$path = $Model->fsPath('files' . DS . $record['model'], $id);
+		$path = $Model->fsPath();
 		$path = '/' . str_replace('\\', '/', $path);
-
+		$path = str_replace('//', '/', $path);
 		if ($this->options['preserveFilename'] === false) {
 			$filename = $Model->stripUuid($id);
 			if ($this->options['preserveExtension'] === true && !empty($record['extension'])) {
@@ -107,7 +114,6 @@ class S3StorageListener extends AbstractStorageEventListener {
 		} else {
 			$filename = $record['filename'];
 		}
-
 		$combined = $path . $filename;
 		$url = 'https://' . $adapterConfig['adapterOptions'][1] . '.s3.amazonaws.com' . $combined;
 

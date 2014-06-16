@@ -23,6 +23,9 @@ class ImageStorage extends FileStorage {
  * @var mixed
  */
 	public $useTable = 'file_storage';
+	
+	
+	public $pathPrefix = "images";
 
 /**
  * Behaviours
@@ -62,6 +65,7 @@ class ImageStorage extends FileStorage {
 		if (!parent::beforeSave($options)) {
 			return false;
 		}
+		
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
 		$this->getEventManager()->dispatch($Event);
@@ -90,6 +94,7 @@ class ImageStorage extends FileStorage {
 				'created' => $created,
 				'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter']),
 				'record' => $this->data));
+			
 			$this->getEventManager()->dispatch($Event);
 		}
 	}
