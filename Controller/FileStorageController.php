@@ -22,8 +22,54 @@ class FileStorageController extends FileStorageAppController {
 		$this->layout = false;
 		$this->view = 'ckebrowser';
 		
+		$params = array();
+		if(isset($this->request->query['type'])) {
+			switch($this->request->query['type']) {
+				case "all": 
+					$params['conditions'] = array();
+					break;
+				case "Image": 
+				case "Video":
+				case "File":
+					$params['conditions'] = array('model' => $this->request->query['type']."Storage");
+					break;
+			}
+		}
 		
-		$this->set('media', $this->FileStorage->find('all'));
+		if($this->request->is('ajax')) {
+			$this->view = 'media-list';
+		}
+		$this->set('media', $this->FileStorage->find('all', $params));
+	}
+	
+	public function delete($id) {
+		if(!$this->request->is('get')) {
+			$media = $this->FileStorage->find('first', array('conditions' => array('FileStorage.id' => $id)));
+			if($media) {
+				$model = $media[$this->FileStorage->alias]['model'];
+				$this->$model->id = $id;
+				if($this->$model->delete()) {
+					$message = "File Deleted!";
+				}else {
+					$this->response->statusCode(500);
+					$message = "File could not be deleted";
+				}
+			}else {
+				$this->response->statusCode(404);
+				$message = "File could not be found";
+			}
+		}else {
+			$message = "Bad Request";
+			$this->response->statusCode(400);
+		}
+		
+		if($this->request->is('ajax')) {
+			$this->layout = false;
+			$this->set('media', $this->FileStorage->find('all'));
+			$this->view = 'media-list';
+		}else {
+			$this->Session->setFlash($message);
+		}
 	}
 	
 	public function upload() {

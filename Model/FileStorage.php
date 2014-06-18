@@ -49,7 +49,7 @@ class FileStorage extends FileStorageAppModel {
  * Short Name for save Folder
  */
 	
-	public $pathPrefix = "images";
+	public $pathPrefix = "docs";
 
 /**
  * Validation rules
@@ -77,6 +77,14 @@ class FileStorage extends FileStorageAppModel {
 				'rule' => array('notEmpty')
 			)
 		)
+	);
+	
+	public $actsAs = array(
+			'FileStorage.UploadValidator' => array(
+					'localFile' => true,
+					'validate' => false,
+					'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx')
+			),
 	);
 
 /**
@@ -174,7 +182,7 @@ class FileStorage extends FileStorageAppModel {
 	public function afterDelete() {
 		try {
 			$Storage = $this->getStorageAdapter($this->record[$this->alias]['adapter']);
-			$Storage->delete($this->record[$this->alias]['path']);
+			$Storage->delete($this->record[$this->alias]['path'].$this->record[$this->alias]['filename']);
 		} catch (Exception $e) {
 			$this->log($e->getMessage(), 'file_storage');
 			return false;
