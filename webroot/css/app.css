@@ -7983,25 +7983,3 @@ th.hide-for-touch {
     display: table-cell !important;
   }
 }
-/* line 44, ../../Vendor/CKBrowser/ckbrowser/scss/app.scss */
-.rel-con {
-  position: relative;
-  min-height: 150px;
-}
-/* line 47, ../../Vendor/CKBrowser/ckbrowser/scss/app.scss */
-.rel-con .rel-item {
-  height: 55%;
-  overflow: hidden;
-}
-/* line 50, ../../Vendor/CKBrowser/ckbrowser/scss/app.scss */
-.rel-con .rel-item img {
-  width: 100%;
-}
-
-/* line 59, ../../Vendor/CKBrowser/ckbrowser/scss/app.scss */
-.media-item {
-  border: 1px solid #999;
-  border-radius: 5px;
-  padding: 20px !important;
-  min-height: 150px;
-}
