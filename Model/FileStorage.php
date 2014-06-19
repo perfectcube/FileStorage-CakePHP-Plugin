@@ -116,7 +116,7 @@ class FileStorage extends FileStorageAppModel {
 		}
 
 		if (empty($this->data[$this->alias]['adapter'])) {
-			$this->data[$this->alias]['adapter'] = 'Local';
+			$this->data[$this->alias]['adapter'] = 'S3Storage';
 		}
 		
 		$Event = new CakeEvent('FileStorage.beforeSave', $this, array(

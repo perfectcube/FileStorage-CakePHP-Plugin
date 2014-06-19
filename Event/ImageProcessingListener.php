@@ -286,8 +286,6 @@ class ImageProcessingListener extends Object implements CakeEventListener {
  */
 	protected function _buildAmazonS3Path(CakeEvent $Event) {
 		extract($Event->data);
-		App::uses($image['Model'], 'FileStorage.Model');
-		$Model = new $image['model']();
 		$path = $this->_buildPath($image, true, $hash);
 		$image['path'] = '/' . $path;
 

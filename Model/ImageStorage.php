@@ -66,6 +66,8 @@ class ImageStorage extends FileStorage {
 			return false;
 		}
 		
+		$this->data[$this->alias]['model'] = $this->alias;
+		
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
 		$this->getEventManager()->dispatch($Event);

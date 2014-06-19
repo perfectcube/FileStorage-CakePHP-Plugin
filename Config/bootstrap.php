@@ -7,14 +7,9 @@ App::uses('ImageProcessingListener', 'FileStorage.Event');
 App::uses('CakeEventManager', 'Event');
 App::uses('ClassRegistry', 'Utility');
 CakePlugin::load(array('Imagine' => array('bootstrap' => true)));
-
+Configure::write('Imagine.salt', 'T!6stub6f=as5e4U#u8u7!ut9wRuphUS');
 // Only required if you're *NOT* using composer or another autoloader!
 spl_autoload_register(__NAMESPACE__ .'\FileStorageUtils::gaufretteLoader');
-
-
-// Attach the S3 Listener to the global CakeEventManager
-$listener = new S3StorageListener();
-CakeEventManager::instance()->attach($listener);
 
 // Attach the Image Processing Listener to the global CakeEventManager
 $listener = new ImageProcessingListener();
@@ -58,6 +53,10 @@ App::uses('ConnectionManager', 'Model');
 $dataSource = ConnectionManager::enumConnectionObjects ();
 
 if(isset($dataSource['aws'])) {
+	
+	// Attach the S3 Listener to the global CakeEventManager
+	$listener = new S3StorageListener();
+	CakeEventManager::instance()->attach($listener);
 	
 	$S3Client = \Aws\S3\S3Client::factory ( $dataSource['aws'] );
 	StorageManager::config ( 'S3Storage', array (
