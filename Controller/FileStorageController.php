@@ -46,7 +46,12 @@ class FileStorageController extends FileStorageAppController {
 		if(!$this->request->is('get')) {
 			$media = $this->FileStorage->find('first', array('conditions' => array('FileStorage.id' => $id)));
 			if($media) {
+				//Checks the model saved with the record.
+				//falls back to base model if not a real object
 				$model = $media[$this->FileStorage->alias]['model'];
+				if(!is_object($this->$model)) {
+					$model = $this->_detectModelByFileType($media[$this->FileStorage->alias]['mime_type']);
+				}
 				$this->$model->id = $id;
 				if($this->$model->delete()) {
 					$message = "File Deleted!";

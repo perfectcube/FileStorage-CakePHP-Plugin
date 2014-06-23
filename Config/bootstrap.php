@@ -67,7 +67,7 @@ if(isset($dataSource['aws'])) {
 					true 
 			),
 			'adapterClass' => '\Gaufrette\Adapter\AwsS3',
-			'class' => '\Gaufrette\FileSystem' 
+			'class' => '\Gaufrette\Filesystem' 
 	) );
 }
 

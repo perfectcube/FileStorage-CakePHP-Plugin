@@ -67,7 +67,6 @@ class ImageStorage extends FileStorage {
 		}
 		
 		$this->data[$this->alias]['model'] = $this->alias;
-		
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
 		$this->getEventManager()->dispatch($Event);
@@ -91,12 +90,13 @@ class ImageStorage extends FileStorage {
 	public function afterSave($created, $options = array()) {
 		if ($created) {
 			$this->data[$this->alias][$this->primaryKey] = $this->getLastInsertId();
-
+		}
+		if(isset($this->data[$this->alias]) && $this->data[$this->alias]['file']['error'] == 0) {
 			$Event = new CakeEvent('ImageStorage.afterSave', $this, array(
-				'created' => $created,
-				'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter']),
-				'record' => $this->data));
-			
+					'created' => $created,
+					'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter']),
+					'record' => $this->data));
+				
 			$this->getEventManager()->dispatch($Event);
 		}
 	}
