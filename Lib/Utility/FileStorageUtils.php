@@ -24,6 +24,7 @@ class FileStorageUtils {
 		if (file_exists($base . $class . '.php')) {
 			include ($base . $class . '.php');
 		}
+		
 	}
 
 /**

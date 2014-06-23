@@ -53,7 +53,6 @@ App::uses('ConnectionManager', 'Model');
 $dataSource = ConnectionManager::enumConnectionObjects ();
 
 if(isset($dataSource['aws'])) {
-	
 	// Attach the S3 Listener to the global CakeEventManager
 	$listener = new S3StorageListener();
 	CakeEventManager::instance()->attach($listener);
@@ -67,7 +66,7 @@ if(isset($dataSource['aws'])) {
 					true 
 			),
 			'adapterClass' => '\Gaufrette\Adapter\AwsS3',
-			'class' => '\Gaufrette\FileSystem' 
+			'class' => '\Gaufrette\Filesystem' 
 	) );
 }
 
