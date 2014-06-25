@@ -114,5 +114,15 @@ class ImageHelper extends AppHelper {
 		$path = str_replace("http:/", "http://", $path);
 		return $path;
 	}
+	
+	public function isImage($data) {
+		if($model = FileStorageUtils::detectModelByFileType($data['mime_type'])) {
+			if($model == "ImageStorage") {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 
 }

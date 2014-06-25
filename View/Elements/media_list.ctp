@@ -3,7 +3,7 @@
 <div class="rel-con">
 <div class="rel-item">
 
-<?php /** For Images */ if($m['FileStorage']['model'] == "ImageStorage"): ?>
+<?php /** For Images */ if($this->Image->isImage($m['FileStorage'])): ?>
   	<?php echo $this->Image->display($m['FileStorage'], null, array('width' => 100, 'height' => 100)); ?>
  <?php endif; ?>
 
