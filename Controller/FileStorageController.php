@@ -2,8 +2,8 @@
 /**
  * FileStorage
  *
- * @author Florian Krämer
- * @copyright 2012 Florian Krämer
+ * @author Florian Krï¿½mer
+ * @copyright 2012 Florian Krï¿½mer
  * @license MIT
  */
 class FileStorageController extends FileStorageAppController {
