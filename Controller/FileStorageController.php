@@ -7,41 +7,41 @@
  * @license MIT
  */
 class FileStorageController extends FileStorageAppController {
-	
+
 	public $uses = array('FileStorage.FileStorage', 'FileStorage.ImageStorage', 'FileStorage.VideoStorage');
-	
+
 	public $helpers = array('FileStorage.Image');
-	
+
 	public function browser() {
 		if(isset($this->request->query['CKEditor'])) {
 			$this->layout = false;
 			$this->view = 'ckebrowser';
 		}
-		
+
 		//Debugging
 		$this->layout = false;
 		$this->view = 'ckebrowser';
-		
+
 		$params = array();
 		if(isset($this->request->query['type'])) {
 			switch($this->request->query['type']) {
-				case "all": 
+				case "all":
 					$params['conditions'] = array();
 					break;
-				case "Image": 
+				case "Image":
 				case "Video":
 				case "File":
 					$params['conditions'] = array('model' => $this->request->query['type']."Storage");
 					break;
 			}
 		}
-		
+
 		if($this->request->is('ajax')) {
 			$this->view = 'media-list';
 		}
 		$this->set('media', $this->FileStorage->find('all', $params));
 	}
-	
+
 	public function delete($id) {
 		if(!$this->request->is('get')) {
 			$media = $this->FileStorage->find('first', array('conditions' => array('FileStorage.id' => $id)));
@@ -67,7 +67,7 @@ class FileStorageController extends FileStorageAppController {
 			$message = "Bad Request";
 			$this->response->statusCode(400);
 		}
-		
+
 		if($this->request->is('ajax')) {
 			$this->layout = false;
 			$this->set('media', $this->FileStorage->find('all'));
@@ -76,9 +76,9 @@ class FileStorageController extends FileStorageAppController {
 			$this->Session->setFlash($message);
 		}
 	}
-	
+
 	public function upload() {
-		
+
 		if (!$this->request->is('get')) {
 			$data = $this->request->data;
 			$data[$this->ImageStorage->alias]['adapter'] = 'S3Storage';
@@ -109,9 +109,9 @@ class FileStorageController extends FileStorageAppController {
 			}else {
 				$this->Session->setFlash($message);
 			}
-			
-			
+
+
 		}
 	}
-	
+
 }

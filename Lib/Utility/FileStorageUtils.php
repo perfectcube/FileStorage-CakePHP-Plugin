@@ -24,7 +24,7 @@ class FileStorageUtils {
 		if (file_exists($base . $class . '.php')) {
 			include ($base . $class . '.php');
 		}
-		
+
 	}
 
 /**
@@ -119,7 +119,7 @@ class FileStorageUtils {
 		}
 		return $newfiles;
 	}
-	
+
 	public static function detectModelByFileType ($mime_type) {
 		if(empty($mime_type)) return false;
 		$ext = array_search($mime_type, self::getMimeTypes());
