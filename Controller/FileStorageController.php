@@ -35,6 +35,8 @@ class FileStorageController extends FileStorageAppController {
 					break;
 			}
 		}
+		$userId = CakeSession::read('Auth.User.id');
+		$params['conditions'][] = array('FileStorage.creator_id' => $userId);
 
 		if($this->request->is('ajax')) {
 			$this->view = 'media-list';
@@ -103,9 +105,10 @@ class FileStorageController extends FileStorageAppController {
 				$message = "Invalid File Type";
 			}
 			if($this->request->is('ajax')) {
-				$this->layout = false;
-				$this->set('media', $this->FileStorage->find('all'));
-				$this->view = 'media-list';
+//				$this->layout = false;
+//				$this->set('media', $this->FileStorage->find('all'));
+//				$this->view = 'media-list';
+				$this->browser();
 			}else {
 				$this->Session->setFlash($message);
 			}
