@@ -76,7 +76,6 @@ class S3StorageListener extends AbstractStorageEventListener {
 			$Model = $Event->subject();
 			$record = $Model->data[$Model->alias];
 			$Storage = $this->getAdapter($record['adapter']);
-			
 			try {
 				$path = $this->_buildPath($Event);
 				$record['path'] = $path['path'];
