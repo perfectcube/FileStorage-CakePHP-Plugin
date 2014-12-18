@@ -119,6 +119,17 @@ class FileStorage extends FileStorageAppModel {
 			$this->data[$this->alias]['adapter'] = 'S3Storage';
 		}
 		
+    	// Start Auto Creator & Modifier Id Saving
+    	$exists = $this->exists();
+    	$user = class_exists('CakeSession') ? CakeSession::read('Auth.User') : null;
+    	if ( !$exists && $this->hasField('creator_id') && empty($this->data[$this->alias]['creator_id']) ) {
+      		$this->data[$this->alias]['creator_id'] = $user['id'];
+    	}
+    	if ( $this->hasField('modifier_id') && empty($this->data[$this->alias]['modifier_id']) ) {
+      		$this->data[$this->alias]['modifier_id'] = $user['id'];
+    	}
+    	// End Auto Creator & Modifier Id Saving 
+		
 		$Event = new CakeEvent('FileStorage.beforeSave', $this, array(
 			'record' => $this->data,
 			'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter'])));
