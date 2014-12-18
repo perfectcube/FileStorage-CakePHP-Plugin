@@ -23,8 +23,8 @@ class ImageStorage extends FileStorage {
  * @var mixed
  */
 	public $useTable = 'file_storage';
-	
-	
+
+
 	public $pathPrefix = "images";
 
 /**
@@ -32,14 +32,26 @@ class ImageStorage extends FileStorage {
  *
  * @var array
  */
-	public $actsAs = array(
-		'Imagine.Imagine',
-		'FileStorage.UploadValidator' => array(
-			'localFile' => true,
-			'validate' => false,
-			'allowedExtensions' => array('jpg', 'jpeg', 'png', 'gif')
-		),
-	);
+//	public $actsAs = array(
+//		'Imagine.Imagine',
+//		'FileStorage.UploadValidator' => array(
+//			'localFile' => true,
+//			'validate' => false,
+//			'allowedExtensions' => array('jpg', 'jpeg', 'png', 'gif')
+//		),
+//	);
+
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		$this->actsAs = array(
+			'Imagine.Imagine',
+			'FileStorage.UploadValidator' => array(
+				'localFile' => true,
+				'validate' => false,
+				'allowedExtensions' => array('jpg', 'jpeg', 'png', 'gif')
+			),
+		);
+	}
 
 /**
  * Getter
@@ -65,7 +77,7 @@ class ImageStorage extends FileStorage {
 		if (!parent::beforeSave($options)) {
 			return false;
 		}
-		
+
 		$this->data[$this->alias]['model'] = $this->alias;
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
@@ -96,7 +108,7 @@ class ImageStorage extends FileStorage {
 					'created' => $created,
 					'storage' => $this->getStorageAdapter($this->data[$this->alias]['adapter']),
 					'record' => $this->data));
-				
+
 			$this->getEventManager()->dispatch($Event);
 		}
 	}

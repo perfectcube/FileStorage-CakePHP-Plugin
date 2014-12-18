@@ -26,34 +26,32 @@ class AudioStorage extends FileStorage {
 	
 	public $pathPrefix = "audio";
 
-/**
- * Behaviours
- *
- * @var array
- */
-	public $actsAs = array(
-		'FileStorage.UploadValidator' => array(
-			'localFile' => true,
-			'validate' => false,
-			'allowedExtensions' => array (
-							'aif',
-							'mid',
-							'midi',
-							'mka',
-							'mp1',
-							'mp2',
-							'mp3',
-							'mpa',
-							'wav',
-							'aac',
-							'flac',
-							'ogg',
-							'ra',
-							'raw',
-							'wma' 
-					) 
-			),
-	);
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		$this->actsAs = array(
+			'FileStorage.UploadValidator' => array(
+				'localFile' => true,
+				'validate' => false,
+				'allowedExtensions' => array (
+								'aif',
+								'mid',
+								'midi',
+								'mka',
+								'mp1',
+								'mp2',
+								'mp3',
+								'mpa',
+								'wav',
+								'aac',
+								'flac',
+								'ogg',
+								'ra',
+								'raw',
+								'wma' 
+						) 
+				),
+		);
+	}
 
 /**
  * Getter

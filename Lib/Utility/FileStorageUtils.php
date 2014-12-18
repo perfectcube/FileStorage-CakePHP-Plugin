@@ -24,7 +24,7 @@ class FileStorageUtils {
 		if (file_exists($base . $class . '.php')) {
 			include ($base . $class . '.php');
 		}
-		
+
 	}
 
 /**
@@ -119,7 +119,7 @@ class FileStorageUtils {
 		}
 		return $newfiles;
 	}
-	
+
 	public static function detectModelByFileType ($mime_type) {
 		if(empty($mime_type)) return false;
 		$ext = array_search($mime_type, self::getMimeTypes());
@@ -606,7 +606,7 @@ public static function getMimeTypes() {
 			'mp2' => 'audio/mpeg',
 			'mp21' => 'application/mp21',
 			'mp2a' => 'audio/mpeg',
-			'mp3' => 'audio/mpeg',
+			'mp3' => 'audio/mp3',
 			'mp4' => 'video/mp4',
 			'mp4a' => 'audio/mp4',
 			'mp4s' => 'application/mp4',
