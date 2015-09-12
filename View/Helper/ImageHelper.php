@@ -112,7 +112,6 @@ class ImageHelper extends AppHelper {
 		$path = str_replace("//", "/", $path);
 		$path = str_replace("\\", "/", $path);
 		$path = str_replace("http:/", "http://", $path);
-		$path = str_replace(array('http://', 'https://'), '//', $path); // we don't need to specify http or https, let the request do that
 		return $path;
 	}
 	
