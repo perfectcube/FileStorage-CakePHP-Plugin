@@ -81,6 +81,23 @@ a:hover {
 img {
   max-width: 100%;
   height: auto;
+  max-height: 100px;
+}
+.rel-item {
+	border: 1px solid #fff;
+	text-align: center;
+    min-height: 100px;
+}
+.rel-con p {
+	font-size: .8em; 
+	text-align:center; 
+	padding: 8px 0px; 
+	margin:0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+    height: 34px;
 }
 
 /* line 391, ../../Vendor/CKBrowser/ckbrowser/bower_components/foundation/scss/foundation/components/_global.scss */
