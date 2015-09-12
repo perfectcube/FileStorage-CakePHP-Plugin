@@ -372,6 +372,10 @@ class ImageProcessingListener extends Object implements CakeEventListener {
  * @return string
  */
 	protected function _buildPath($record, $extension = true, $hash = null) {
+		if (!empty($record->data)) {
+			$record = $record->data['image'];
+		}
+		
 		if ($this->options['preserveFilename'] === true) {
 			if (!empty($hash)) {
 				$path = $record['path'] . preg_replace('/\.[^.]*$/', '', $record['filename']) . '.' . $hash . '.' . $record['extension'];
@@ -391,7 +395,6 @@ class ImageProcessingListener extends Object implements CakeEventListener {
 		if ($this->adapterClass === 'AmazonS3' || $this->adapterClass === 'AwsS3' ) {
 			return str_replace("//", "/", str_replace('\\', '/', $path));
 		}
-
 		return $path;
 	}
 
