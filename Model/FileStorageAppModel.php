@@ -8,13 +8,4 @@ App::uses('AppModel', 'Model');
  */
 class FileStorageAppModel extends AppModel {
 
-/**
- * Behaviors
- *
- * @var array
- */
-	public $actsAs = array(
-		'Containable'
-		);
-
 }
