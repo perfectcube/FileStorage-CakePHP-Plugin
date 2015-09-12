@@ -1,1 +1,1 @@
-<?php echo $this->Element('FileStorage.media_list', array('media' => $media)); ?>
+<?php echo $this->element('FileStorage.media_list', array('media' => $media)); ?>
