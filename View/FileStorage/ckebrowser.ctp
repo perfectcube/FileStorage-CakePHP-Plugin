@@ -1,11 +1,11 @@
 <!doctype html>
 <html class="no-js" lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Buildrr Browser</title>
-<link rel="stylesheet" href="/FileStorage/css/app.css" />
-<script src="/FileStorage/bower_components/modernizr/modernizr.js"></script>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Buildrr Browser</title>
+	<link rel="stylesheet" href="/FileStorage/css/app.css" />
+	<script src="/FileStorage/bower_components/modernizr/modernizr.js"></script>
 </head>
 <body>
 	<div class="off-canvas-wrap" data-offcanvas>
@@ -25,7 +25,7 @@
 					<li><label>Media Types</label></li>
 					<li><a href="javascript:void(0);" data-type="all">All</a></li>
 					<li><a href="javascript:void(0);" data-type="Image">Images</a></li>
-					<!-- <li><a href="javascript:void(0);" data-type="Video">Videos</a></li> -->
+					<li><a href="javascript:void(0);" data-type="Video">Video</a></li>
 					<li><a href="javascript:void(0);" data-type="File">Files</a></li>
 				</ul>
 			</aside>
@@ -86,7 +86,7 @@
 		        target:        '#browserList',   // target element(s) to be updated with server response 
 		        beforeSubmit:  showRequest,  // pre-submit callback 
 		        success:       showResponse,  // post-submit callback
-		        error:			showError
+		        error:		   showError
 		 
 		        // other available options: 
 		        //url:       url         // override for form's 'action' attribute 
@@ -104,7 +104,7 @@
 
 			//Click Handler for ckeditor
 			$("#browserList").on('click', '.select-media', function(e) {
-				var url = $(this).data('url');
+				var url = $(this).parent().data('url');
 				sendUrl(url);
 				window.close();
 			});
