@@ -1,11 +1,5 @@
 <?php 
-/**
- * FileStorage
- *
- * @author Florian Kr�mer
- * @copyright 2012 Florian Kr�mer
- * @license MIT
- */
+
 class FileStorageSchema extends CakeSchema {
 
 /**
@@ -46,6 +40,30 @@ class FileStorageSchema extends CakeSchema {
 		'hash' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 64),
 		'path' => array('type' => 'string', 'null' => false, 'default' => null),
 		'adapter' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 32, 'comment' => 'Gaufrette Storage Adapter Class'),
+		'code' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 255, 'comment' => 'Deprecated, moved to file_attachments table.'),
+		'creator_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
+		'modifier_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
+		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'modified' => array('type' => 'datetime', 'null' => true, 'default' => null),
+		'indexes' => array(
+			'PRIMARY' => array('column' => 'id', 'unique' => 1)
+		),
+	);
+
+/**
+ * Schema for file storage table
+ *
+ * @var array
+ */
+	public $file_attachments = array(
+		'id' => array('type' => 'string', 'null' => false, 'default' => null, 'length' => 36, 'key' => 'primary'),
+		'file_storage_id' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 36),
+		'model' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 100),
+		'foreign_key' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 36),
+		'code' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 255),
+		'title' => array('type' => 'string', 'null' => true, 'default' => null, 'length' => 255),
+		'description' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'charset' => 'utf8'),
+		'order' => array('type' => 'integer', 'null' => true, 'default' => null, 'length' => 11),
 		'creator_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
 		'modifier_id' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 36),
 		'created' => array('type' => 'datetime', 'null' => true, 'default' => null),
