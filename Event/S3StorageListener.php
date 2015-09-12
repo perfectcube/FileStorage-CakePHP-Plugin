@@ -115,8 +115,9 @@ class S3StorageListener extends AbstractStorageEventListener {
 			$filename = $record['filename'];
 		}
 		$combined = $path . $filename;
-		
+		// not sure why it was this, and working on mathnasium??? rk
 		$url = 'https://' . $adapterConfig['adapterOptions'][1] . '.s3.amazonaws.com' . $combined;
+		//$url = 'https://s3.amazonaws.com' . $adapterConfig['adapterOptions'][1] . $combined;
 		
 		return array(
 			'filename' => $filename,
