@@ -1,5 +1,6 @@
 <?php
 App::uses('FileStorage', 'FileStorage.Model');
+App::uses('FileAttach', 'FileStorage.Model');
 App::uses('Folder', 'Utility');
 /**
  * Image
@@ -26,6 +27,19 @@ class ImageStorage extends FileStorage {
 
 
 	public $pathPrefix = "images";
+
+/**
+ * Has many
+ * 
+ * @var array
+ */
+ 	public $hasMany = array(
+		'FileAttach' => array(
+			'className' => 'FileStorage.FileAttach',
+			'foreignKey' => 'file_storage_id',
+			'dependent' => true
+			)
+		);
 
 /**
  * Behaviours
@@ -78,7 +92,7 @@ class ImageStorage extends FileStorage {
 			return false;
 		}
 
-		$this->data[$this->alias]['model'] = $this->alias;
+		$this->data[$this->alias]['model'] = !empty($this->data[$this->alias]['model']) ? $this->data[$this->alias]['model'] : $this->alias;  // (this should not be set here, the model should be the to the model relationship to the ImageStorage relationship)
 		$Event = new CakeEvent('ImageStorage.beforeSave', $this, array(
 			'record' => $this->data));
 		$this->getEventManager()->dispatch($Event);
