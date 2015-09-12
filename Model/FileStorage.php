@@ -2,6 +2,7 @@
 App::uses('File', 'Utility');
 App::uses('Folder', 'Utility');
 App::uses('FileStorageAppModel', 'FileStorage.Model');
+App::uses('FileAttach', 'FileStorage.Model');
 App::uses('StorageManager', 'FileStorage.Lib');
 App::uses('FileStorageUtils', 'FileStorage.Utility');
 /**
@@ -81,11 +82,25 @@ class FileStorage extends FileStorageAppModel {
 	
 	public $actsAs = array(
 			'FileStorage.UploadValidator' => array(
-					'localFile' => true,
-					'validate' => false,
-					'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'txt', 'zip', 'eot', 'csv', 'psd', 'ai', 'fla', 'eps', 'ppt', 'mp3', 'mov', 'mp4', 'swf', 'avi', 'wmv', 'flv', 'xml', 'swf')
+				'localFile' => true,
+				'validate' => false,
+//				'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'txt', 'zip', 'eot', 'csv', 'psd', 'ai', 'fla', 'eps', 'ppt', 'mp3', 'mov', 'mp4', 'swf', 'avi', 'wmv', 'flv', 'xml', 'swf')
+				'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'txt', 'zip', 'eot', 'csv', 'psd', 'ai', 'fla', 'eps', 'ppt', 'mp3', 'xml', 'swf')
 			),
 	);
+
+/**
+ * Has many
+ * 
+ * @var array
+ */
+ 	public $hasMany = array(
+		'FileAttach' => array(
+			'className' => 'FileStorage.FileAttach',
+			'foreignKey' => 'file_storage_id',
+			'dependent' => true
+			)
+		);
 
 /**
  * Renews the FileUpload behavior with a new configuration
