@@ -1,5 +1,6 @@
 <?php
 App::uses('FileStorage', 'FileStorage.Model');
+App::uses('FileAttach', 'FileStorage.Model');
 App::uses('Folder', 'Utility');
 /**
  * Image
@@ -25,6 +26,19 @@ class AudioStorage extends FileStorage {
 	public $useTable = 'file_storage';
 	
 	public $pathPrefix = "audio";
+
+/**
+ * Has many
+ * 
+ * @var array
+ */
+ 	public $hasMany = array(
+		'FileAttach' => array(
+			'className' => 'FileStorage.FileAttach',
+			'foreignKey' => 'file_storage_id',
+			'dependent' => true
+			)
+		);
 
 	public function __construct($id = false, $table = null, $ds = null) {
 		parent::__construct($id, $table, $ds);
