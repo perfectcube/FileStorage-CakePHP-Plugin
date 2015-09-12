@@ -83,7 +83,7 @@ class FileStorage extends FileStorageAppModel {
 			'FileStorage.UploadValidator' => array(
 					'localFile' => true,
 					'validate' => false,
-					'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx')
+					'allowedExtensions' => array('pdf', 'csv', 'doc', 'docx', 'xls', 'xlsx', 'odt', 'txt', 'zip', 'eot', 'csv', 'psd', 'ai', 'fla', 'eps', 'ppt', 'mp3', 'mov', 'mp4', 'swf', 'avi', 'wmv', 'flv', 'xml', 'swf')
 			),
 	);
 
@@ -271,7 +271,6 @@ class FileStorage extends FileStorageAppModel {
 	
 	//This is the Zuha Adapted Method
 	public function fsPath($parentfolder='upload', $subfolder=false) {
-		
 		$type = $this->pathPrefix;
 		$uid = 0;
 		if(CakeSession::check('Auth.User')) {
