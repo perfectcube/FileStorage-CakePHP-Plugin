@@ -1,6 +1,7 @@
 <?php
 /**
  * ImageHelper
+ * DEPRECATED, USE ImageStorageHelper Instead
  *
  * @author Florian Krämer
  * @copyright 2012 Florian Krämer
