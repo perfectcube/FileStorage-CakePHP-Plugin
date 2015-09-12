@@ -1131,6 +1131,7 @@ public static function getMimeTypes() {
 			'z8' => 'application/x-zmachine',
 			'zaz' => 'application/vnd.zzazz.deck+xml',
 			'zip' => 'application/zip',
+			'zip' => 'application/x-zip-compressed',
 			'zir' => 'application/vnd.zul',
 			'zirz' => 'application/vnd.zul',
 			'zmm' => 'application/vnd.handheld-entertainment+xml'
