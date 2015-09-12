@@ -1,5 +1,6 @@
 <?php
 App::uses('FileStorage', 'FileStorage.Model');
+App::uses('FileAttach', 'FileStorage.Model');
 App::uses('Folder', 'Utility');
 /**
  * Image
@@ -27,38 +28,50 @@ class VideoStorage extends FileStorage {
 	public $pathPrefix = "videos";
 
 /**
- * Behaviours
- *
+ * Has many
+ * 
  * @var array
  */
-	public $actsAs = array(
-		'FileStorage.UploadValidator' => array(
-			'localFile' => true,
-			'validate' => false,
-			'allowedExtensions' => array(
-				'mpg',
-				'mov',
-				'wmv',
-				'avi',
-				'f4v',
-				'flv',
-				'h264',
-				'm4v',
-				'mkv',
-				'mp4',
-				'mp4v',
-				'wav',
-				'mpe',
-				'mpeg',
-				'mpeg4',
-				'mpg',
-				'nsv',
-				'qt',
-				'swf',
-				'xvid',
+ 	public $hasMany = array(
+		'FileAttach' => array(
+			'className' => 'FileStorage.FileAttach',
+			'foreignKey' => 'file_storage_id',
+			'dependent' => true
+			)
+		);
+
+	public function __construct($id = false, $table = null, $ds = null) {
+		parent::__construct($id, $table, $ds);
+		$this->actsAs = array(
+			'FileStorage.UploadValidator' => array(
+				'localFile' => true,
+				'validate' => false,
+				'allowedExtensions' => array(
+					'mpg',
+					'mov',
+					'wmv',
+					'avi',
+					'f4v',
+					'flv',
+					'h264',
+					'm4v',
+					'mkv',
+					'mp4',
+					'mp4v',
+					'wav',
+					'mpe',
+					'mpeg',
+					'mpeg4',
+					'mpg',
+					'nsv',
+					'qt',
+					'swf',
+					'xvid',
+					)
 				)
-			),
-	);
+		);
+	}
+
 
 /**
  * Getter
