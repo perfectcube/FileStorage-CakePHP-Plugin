@@ -11,6 +11,63 @@ class FileStorageController extends FileStorageAppController {
 	public $uses = array('FileStorage.FileStorage', 'FileStorage.ImageStorage', 'FileStorage.VideoStorage');
 
 	public $helpers = array('FileStorage.Image');
+	
+	
+	/**
+	 * Custom function for migrating from old file browser (kcfinder) to new one
+	 * 
+	 * - upload all files inside of the webroot/upload folder (including the upload folder) to s3
+	 * - update webroot/js/ckeditor/config.js file
+	 * - run this migrate function  (visit yourdomain.com/admin/file_storage/file_storage/migrate)
+	 * - check the /file_storage/file_storage/browser page (thumbnails should be showing up correctly now)
+	 * - rename the upload directory to up.delete.load
+	 * - update .htaccess file, check that files are accessible
+	 * - delete the files from the server
+	 */
+	public function migrate() {
+		
+		$replacement = $directory = ROOT . DS . SITE_DIR . DS. 'Locale' . DS . 'View' . DS . 'webroot';
+		$directory = $replacement . DS . 'upload';
+		App::uses('Folder', 'Utility');
+		App::uses('File', 'Utility');
+		$dir = new Folder($directory);
+		$files = $dir->findRecursive();
+		foreach ($files as $file) {
+			$file = new File($file);
+			$info = $file->info();
+			$model = $this->_detectModelByFileType($info['mime']);
+			if (!empty($model)) {
+				$data['FileStorage']['model'] = $model;
+				$data['FileStorage']['filename'] = $info['basename'];
+				$data['FileStorage']['filesize'] = $info['filesize'];
+				$data['FileStorage']['mime_type'] = $info['mime'];
+				$data['FileStorage']['extension'] = $info['extension'];
+				$data['FileStorage']['path'] = '/' . str_replace('sites/', '', SITE_DIR) . str_replace($replacement, '', $info['dirname']) . '/';
+				$data['FileStorage']['adapter'] = 'S3Storage';
+				$data['FileStorage']['creator_id'] = $int = intval(filter_var($data['FileStorage']['path'], FILTER_SANITIZE_NUMBER_INT));
+				$data['FileStorage']['modifier_id'] = $int;
+				$data['FileStorage']['created'] = date('Y-m-d H:i:s', $file->lastChange());
+				$data['FileStorage']['modified'] = date('Y-m-d H:i:s');
+				
+				if ($duplicate = $this->FileStorage->find('first', array('conditions' => array('FileStorage.filename' => $data['FileStorage']['filename'])))) {
+					debug('Duplicate : ' . $data['FileStorage']['filename']);
+					unset($data);
+					continue;
+				}
+				$this->FileStorage->create();
+				if ($this->FileStorage->save($data, array('callbacks' => false))) {
+					debug('Saved: ' . $data['FileStorage']['filename']);
+					unset($data);
+					continue;
+				} else {
+					debug($data);
+					exit;
+				}
+			}			
+			$file->close();
+		}
+		$this->render(false);
+	}
 
 	public function browser() {
 		if(isset($this->request->query['CKEditor'])) {
@@ -35,9 +92,9 @@ class FileStorageController extends FileStorageAppController {
 					break;
 			}
 		}
-		$userId = CakeSession::read('Auth.User.id');
-		$params['conditions'][] = array('FileStorage.creator_id' => $userId);
-
+		$params['conditions'][] = array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'));
+		$params['conditions']['filename !='] = '';
+		
 		if($this->request->is('ajax')) {
 			$this->view = 'media-list';
 		}
@@ -45,9 +102,9 @@ class FileStorageController extends FileStorageAppController {
 	}
 
 	public function delete($id) {
-		if(!$this->request->is('get')) {
+		if (!$this->request->is('get')) {
 			$media = $this->FileStorage->find('first', array('conditions' => array('FileStorage.id' => $id)));
-			if($media) {
+			if ($media) {
 				//Checks the model saved with the record.
 				//falls back to base model if not a real object
 				$model = $media[$this->FileStorage->alias]['model'];
@@ -55,65 +112,61 @@ class FileStorageController extends FileStorageAppController {
 					$model = $this->_detectModelByFileType($media[$this->FileStorage->alias]['mime_type']);
 				}
 				$this->$model->id = $id;
-				if($this->$model->delete()) {
+				if ($this->$model->delete()) {
 					$message = "File Deleted!";
-				}else {
+				} else {
 					$this->response->statusCode(500);
 					$message = "File could not be deleted";
 				}
-			}else {
+			} else {
 				$this->response->statusCode(404);
 				$message = "File could not be found";
 			}
-		}else {
+		} else {
 			$message = "Bad Request";
 			$this->response->statusCode(400);
 		}
 
-		if($this->request->is('ajax')) {
+		if ($this->request->is('ajax')) {
 			$this->layout = false;
-			$this->set('media', $this->FileStorage->find('all'));
+			$this->set('media', $this->FileStorage->find('all', array('conditions' => array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'), 'filename !=' => ''))));
 			$this->view = 'media-list';
-		}else {
+		} else {
 			$this->Session->setFlash($message);
 		}
 	}
 
 	public function upload() {
-
 		if (!$this->request->is('get')) {
 			$data = $this->request->data;
 			$data[$this->ImageStorage->alias]['adapter'] = 'S3Storage';
 			$model = $this->_detectModelByFileType($data['File']['file']['type']);
-			if($model) {
+			if ($model) {
 				$data['File']['model'] = $this->$model->alias;
 				$data['File']['adapter'] = 'S3Storage';
-				try{
+				try {
 					if ($data = $this->$model->save(array($this->$model->alias => $data['File']))) {
 						$this->response->statusCode(200);
 						$message = "Upload Successful";
-					}else {
+					} else {
 						$this->response->statusCode(500);
 						$message = "Upload Failed";
 					}
-				}catch (Exception $e) {
+				} catch (Exception $e) {
 					debug($e->getMessage());exit;
 				}
-			}
-			else {
+			} else {
 				$this->response->statusCode(415);
 				$message = "Invalid File Type";
 			}
 			if($this->request->is('ajax')) {
-//				$this->layout = false;
-//				$this->set('media', $this->FileStorage->find('all'));
-//				$this->view = 'media-list';
+				$this->layout = false;
+				$this->set('media', $this->FileStorage->find('all', array('conditions' => array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'), 'filename !=' => ''))));
+				$this->view = 'media-list';
 				$this->browser();
-			}else {
+			} else {
 				$this->Session->setFlash($message);
 			}
-
-
 		}
 	}
 
