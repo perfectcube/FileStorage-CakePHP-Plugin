@@ -60,11 +60,11 @@ if(isset($dataSource['aws'])) {
 	$S3Client = \Aws\S3\S3Client::factory ( $dataSource['aws'] );
 	StorageManager::config ( 'S3Storage', array (
 			'adapterOptions' => array (
-					$S3Client,
-					'mathnasium.com',
-					array (),
-					true 
-			),
+				$S3Client,
+				'isby',
+				array (),
+				true 
+				),
 			'adapterClass' => '\Gaufrette\Adapter\AwsS3',
 			'class' => '\Gaufrette\Filesystem' 
 	) );
