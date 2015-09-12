@@ -16,13 +16,10 @@ class FileStorageController extends FileStorageAppController {
 	/**
 	 * Custom function for migrating from old file browser (kcfinder) to new one
 	 * 
-	 * - upload all files inside of the webroot/upload folder (including the upload folder) to s3
-	 * - update webroot/js/ckeditor/config.js file
-	 * - run this migrate function  (visit yourdomain.com/admin/file_storage/file_storage/migrate)
-	 * - check the /file_storage/file_storage/browser page (thumbnails should be showing up correctly now)
-	 * - rename the upload directory to up.delete.load
-	 * - update .htaccess file, check that files are accessible
-	 * - delete the files from the server
+	 * 1. upload all files inside of the webroot/upload folder (including the upload folder) to s3
+	 * 2. run this migrate function
+	 * 3. check the /file_storage/file_storage/browser page (thumbnails should be showing up correctly now)
+	 * 4. delete the files from the server
 	 */
 	public function migrate() {
 		
@@ -92,9 +89,10 @@ class FileStorageController extends FileStorageAppController {
 					break;
 			}
 		}
-		$params['conditions'][] = array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'));
-		$params['conditions']['filename !='] = '';
-		
+
+		$userId = CakeSession::read('Auth.User.id');
+		$params['conditions'][] = array('FileStorage.creator_id' => $userId);
+
 		if($this->request->is('ajax')) {
 			$this->view = 'media-list';
 		}
@@ -102,7 +100,7 @@ class FileStorageController extends FileStorageAppController {
 	}
 
 	public function delete($id) {
-		if (!$this->request->is('get')) {
+		// if (!$this->request->is('get')) { why do we care if it's a get request
 			$media = $this->FileStorage->find('first', array('conditions' => array('FileStorage.id' => $id)));
 			if ($media) {
 				//Checks the model saved with the record.
@@ -113,7 +111,7 @@ class FileStorageController extends FileStorageAppController {
 				}
 				$this->$model->id = $id;
 				if ($this->$model->delete()) {
-					$message = "File Deleted!";
+					$message = "File Deleted!";	
 				} else {
 					$this->response->statusCode(500);
 					$message = "File could not be deleted";
@@ -122,24 +120,29 @@ class FileStorageController extends FileStorageAppController {
 				$this->response->statusCode(404);
 				$message = "File could not be found";
 			}
-		} else {
-			$message = "Bad Request";
-			$this->response->statusCode(400);
-		}
+		// } else {
+			// $message = "Bad Request";
+			// $this->response->statusCode(400);
+		// }
 
 		if ($this->request->is('ajax')) {
 			$this->layout = false;
-			$this->set('media', $this->FileStorage->find('all', array('conditions' => array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'), 'filename !=' => ''))));
+			$this->set('media', $this->FileStorage->find('all'));
 			$this->view = 'media-list';
 		} else {
 			$this->Session->setFlash($message);
+			$this->redirect($this->referer()); // not sure this won't cause a problem (needed it for delete links)
 		}
 	}
 
 	public function upload() {
 		if (!$this->request->is('get')) {
 			$data = $this->request->data;
+//			debug($this->ImageStorage->alias);
 			$data[$this->ImageStorage->alias]['adapter'] = 'S3Storage';
+//			$data['ImageStorage']['adapter'] = 'S3Storage';
+//			$data['VideoStorage']['adapter'] = 'S3Storage';
+//			debug($data);
 			$model = $this->_detectModelByFileType($data['File']['file']['type']);
 			if ($model) {
 				$data['File']['model'] = $this->$model->alias;
@@ -161,7 +164,7 @@ class FileStorageController extends FileStorageAppController {
 			}
 			if($this->request->is('ajax')) {
 				$this->layout = false;
-				$this->set('media', $this->FileStorage->find('all', array('conditions' => array('FileStorage.creator_id' => CakeSession::read('Auth.User.id'), 'filename !=' => ''))));
+				$this->set('media', $this->FileStorage->find('all'));
 				$this->view = 'media-list';
 				$this->browser();
 			} else {
