@@ -36,10 +36,9 @@ class FileAttachBehavior extends ModelBehavior {
 		if (isset($Model->data['File'])) {
 			$this->data['File'] = $Model->data['File'];
 			unset($Model->data['File']);
-		}			
+		}
 		return true;
 	}
-
 
 /**
  * afterSave is called after a model is saved.
@@ -123,7 +122,7 @@ class FileAttachBehavior extends ModelBehavior {
 		// handles many
 		for ($i=0; $i < count($results); $i++) {
 			if (!empty($results[$i]['FileStorage'])) {
-				$results[$i]['_FileStorage'] = Set::combine($results[$i], 'FileStorage.{n}.code', 'FileStorage.{n}'); 
+				$results[$i]['_FileStorage'] = Set::combine($results[$i], 'FileStorage.{n}.FileAttachment.code', 'FileStorage.{n}'); 
 			}
 		}
 		// handles one
@@ -149,7 +148,7 @@ class FileAttachBehavior extends ModelBehavior {
                 	// 'conditions' => array(
                 		// 'FileAttach.model' => $Model->alias
                 		// ),
-            		'order' => array('FileAttachment.order')
+            		'order' => array('ISNULL(FileAttachment.order)', 'FileAttachment.order')
             	)
         	)
 		);
@@ -174,12 +173,14 @@ class FileAttachBehavior extends ModelBehavior {
 					if ($model) {
 						$data['File']['model'] = $model;
 						$data['File']['adapter'] = 'S3Storage';
-						
 						App::uses('File', 'Utility');
 						$file = new File($attachment['file']['tmp_name']);
 						$info = $file->info();
+						// fill in empty data that should have something (if possible)
 						$attachment['user_id'] = !empty($attachment['user_id']) ? $attachment['user_id'] : CakeSession::read('Auth.User.id');
-						
+						$attachment['title'] = !empty($attachment['title']) ? $attachment['title'] : $attachment['file']['name'];
+						$attachment['alt'] = !empty($attachment['alt']) ? $attachment['alt'] : ZuhaInflector::asciify($attachment['file']['name']);
+
 						$saveData = array($this->$model->alias => array_merge($attachment, array(
 							'filename' => uniqid('', true) . '.' . substr(strrchr($attachment['file']['name'],'.'),1),
 							'filesize' => $info['filesize'],
@@ -196,7 +197,6 @@ class FileAttachBehavior extends ModelBehavior {
 							'model' => $Model->name,
 							'foreign_key' => $Model->id
 							));
-						
 						try {
 							$this->$model->create();	
 							if ($this->$model->save($saveData)) {
