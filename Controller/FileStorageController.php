@@ -92,6 +92,7 @@ class FileStorageController extends FileStorageAppController {
 
 		$userId = CakeSession::read('Auth.User.id');
 		$params['conditions'][] = array('FileStorage.creator_id' => $userId);
+		$params['order'] = array('FileStorage.filename' => 'ASC');
 
 		if($this->request->is('ajax')) {
 			$this->view = 'media-list';
@@ -127,7 +128,7 @@ class FileStorageController extends FileStorageAppController {
 
 		if ($this->request->is('ajax')) {
 			$this->layout = false;
-			$this->set('media', $this->FileStorage->find('all'));
+			$this->set('media', $this->FileStorage->find('all', array('order' => array('FileStorage.filename' => 'ASC'))));
 			$this->view = 'media-list';
 		} else {
 			$this->Session->setFlash($message);
@@ -164,7 +165,7 @@ class FileStorageController extends FileStorageAppController {
 			}
 			if($this->request->is('ajax')) {
 				$this->layout = false;
-				$this->set('media', $this->FileStorage->find('all'));
+				$this->set('media', $this->FileStorage->find('all', array('order' => array('FileStorage.filename' => 'ASC'))));
 				$this->view = 'media-list';
 				$this->browser();
 			} else {
