@@ -1,3 +1,7 @@
+[submodule "Vendor/Gaufrette"]
+	path = Vendor/Gaufrette
+	url = git://github.com/KnpLabs/Gaufrette.git
+	
 [submodule "Vendor/CKBrowser/ckbrowser"]
 	path = Vendor/CKBrowser/ckbrowser	
-	url = https://github.com/perfectcube/zuha-filestorage-ckbrowser
+	url = git@github.com:lyga17/zuha-filestorage-ckbrowser.git
